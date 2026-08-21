@@ -5,4 +5,5 @@ public record JugadorResponseDTO(
         String nickname,
         String email,
         String rango
-) { }
+)
+{ }
