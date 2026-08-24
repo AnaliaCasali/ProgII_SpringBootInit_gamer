@@ -19,10 +19,11 @@ public class JugadorServiceImpl implements JugadorService {
     // paso1 creo la variable  que sera final
 
     private final JugadorRepository jugadorRepository ;
+
     // paso 2 agrego el contructor para inicializar la variable
     public JugadorServiceImpl(JugadorRepository jugadorRepository) {
         this.jugadorRepository = jugadorRepository;
-     }
+    }
     @Override
     public List<JugadorResponseDTO> listarTodosJugadores() {
         List<JugadorResponseDTO> lista=
@@ -80,16 +81,39 @@ public class JugadorServiceImpl implements JugadorService {
 
     @Override
     public Optional<JugadorResponseDTO> buscarJugadorPorIdv2(Integer id) {
-        // busco por id con repository
-        Optional<Jugador> jugador= jugadorRepository.findById(id);
-        // genero un optional de response a partir de un jugador que puede que sea nulo
-        Optional<JugadorResponseDTO> responseDTO=
-                Optional.ofNullable(
-                        // convierte a DTO el jugador que vino del repository
-                        toResponseDTO(jugador.get())
-                );
-        return responseDTO;
+        Optional<Jugador> jugador = jugadorRepository.findById(id);
+        //si quiero convertir el contenido del Optional,
+        // sin "abrirlo" con .get() uso MAP, si lo encontro convierte pero
+        // si jugador está vacío, .map() no hace nada
+        // y devuelve Optional.empty()
+        return jugador.map(this::toResponseDTO);
     }
 
+    @Override
+    public Optional<JugadorResponseDTO> actualizar(Integer id, JugadorCreateDTO jugador) {
 
+        return jugadorRepository
+                .findById(id) // lo busco con el repository
+                .map(jugador1 -> { // convierto createDto a jugador
+                    jugador1.setNickname(jugador.nickname());
+                    jugador1.setEmail(jugador.email());
+                    jugador1.setPassword(jugador.password());
+                    return jugadorRepository.save(jugador1); // guardo la actualizacion con el repository
+                })
+                .map(this::toResponseDTO);
+            // llamo al metodo para volver a convertir a la inversa Jugador a ResponseDTO
+
+    }
+
+    @Override
+    public boolean eliminarJugador(Integer id) {
+        if( jugadorRepository.existsById(id) ) {
+             Jugador jugador= jugadorRepository.findById(id).get();
+            jugadorRepository.delete(jugador);
+            return true;
+        }
+        else
+            return false;
+
+    }
 }

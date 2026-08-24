@@ -76,4 +76,22 @@ public class JugadorController {
                 .orElseGet(()->ResponseEntity.notFound().build());
      }
 
+     @PutMapping("/{id}")
+    public ResponseEntity<JugadorResponseDTO>actualizar
+             (@PathVariable Integer id, @Valid @RequestBody JugadorCreateDTO jugador ){
+
+       return  jugadorService.actualizar(id, jugador)
+               .map(ResponseEntity::ok) // si lo encontro ok
+               .orElseGet(()->ResponseEntity.notFound().build()); // sino notFound
+
+     }
+     @DeleteMapping("/{id}")
+    public ResponseEntity<Boolean> eliminar(@PathVariable Integer id){
+         // uso operador ternario
+        // si pudo eliminar devuelve noContent  sino no encontrado
+         return jugadorService.eliminarJugador(id)?
+                                                ResponseEntity.noContent().build()
+                                               : ResponseEntity.notFound().build();
+     }
+
 }

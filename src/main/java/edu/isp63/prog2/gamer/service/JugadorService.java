@@ -11,4 +11,9 @@ public interface JugadorService {
         JugadorResponseDTO  crearJugador(JugadorCreateDTO jugador);
         JugadorResponseDTO buscarJugadorPorId(Integer id);
         Optional<JugadorResponseDTO> buscarJugadorPorIdv2(Integer id);
+        Optional<JugadorResponseDTO> actualizar(Integer id, JugadorCreateDTO jugador);
+        boolean eliminarJugador(Integer id);
+
+
+
 }
