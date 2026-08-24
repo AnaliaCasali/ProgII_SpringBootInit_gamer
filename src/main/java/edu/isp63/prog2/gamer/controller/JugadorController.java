@@ -8,7 +8,9 @@ import edu.isp63.prog2.gamer.service.JugadorService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +36,25 @@ public class JugadorController {
         return jugadorService.crearJugador(jugador);
     }
 
+
+    @PostMapping("/crear")
+    ResponseEntity<JugadorResponseDTO> crearJugadorV2(@Valid @RequestBody JugadorCreateDTO jugador,
+    UriComponentsBuilder uriBuilder){
+
+        // paso 1 agrego en la firma del metodo ResponseEntity y UriComponentsBuilder
+        // paso 2 guardo en una variable el responseDTO que devuelve el crear
+        JugadorResponseDTO jugadorCreado   = jugadorService.crearJugador(jugador);
+
+        // paso 3 crear la url para identificar el objeto creado y devolverlo completo
+        URI url= uriBuilder
+                .path("/api/v1/jugadores/{id}")  // veo la ruta definida arriba
+                .buildAndExpand(jugadorCreado.id()) // uso el dto anterior
+                .toUri();
+
+        //paso 4 devuelvo el responseEntity con la url y el jugador creado
+        return ResponseEntity.created(url).body(jugadorCreado);
+    }
+
     @GetMapping("/buscarporid")
     ResponseEntity<JugadorResponseDTO> buscarJugadorPorId(@RequestParam Integer id)
     {
@@ -53,7 +74,6 @@ public class JugadorController {
         return jugadorService.buscarJugadorPorIdv2(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(()->ResponseEntity.notFound().build());
-
      }
 
 }
