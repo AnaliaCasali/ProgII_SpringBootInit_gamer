@@ -6,6 +6,10 @@ import edu.isp63.prog2.gamer.entity.Jugador;
 import edu.isp63.prog2.gamer.repository.JugadorRepository;
 import edu.isp63.prog2.gamer.service.JugadorService;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -115,5 +119,40 @@ public class JugadorServiceImpl implements JugadorService {
         else
             return false;
 
+    }
+
+    @Override
+    public Page<JugadorResponseDTO> listarTodos(Pageable pageable) {
+        return  jugadorRepository.findAll(pageable)
+                .map(this::toResponseDTO);
+    }
+
+    @Override
+    public Page<JugadorResponseDTO> listarPorRango(String rango, Pageable pageable) {
+        return jugadorRepository.findByRangoContaining(rango,pageable)
+                .map(this::toResponseDTO);
+    }
+
+    @Override
+    public List<JugadorResponseDTO> findByNicknameJPQL(String nickname) {
+        return jugadorRepository
+                .findByNicknameJPQL(nickname)
+                .stream()
+                .map(this::toResponseDTO)
+                .toList();
+    }
+
+    @Override
+    public List<JugadorResponseDTO> findByEmailJPQL(String email) {
+        return jugadorRepository
+                .findByEmailJPQL(email)
+                .stream()
+                .map(this::toResponseDTO)
+                .toList();
+    }
+
+    @Override
+    public Optional<String> findEmailByIdJPQL(Integer id) {
+        return  jugadorRepository.findEmailByIdJPQL(id);
     }
 }

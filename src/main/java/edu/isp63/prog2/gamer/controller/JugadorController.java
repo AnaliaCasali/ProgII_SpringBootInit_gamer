@@ -6,6 +6,9 @@ import edu.isp63.prog2.gamer.dto.JugadorResponseDTO;
 import edu.isp63.prog2.gamer.entity.Jugador;
 import edu.isp63.prog2.gamer.service.JugadorService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -94,4 +97,48 @@ public class JugadorController {
                                                : ResponseEntity.notFound().build();
      }
 
+     @GetMapping("/listartodospage")
+    public ResponseEntity<Page<JugadorResponseDTO>> listrJugadoresPaginado(
+            @PageableDefault(size=10)  Pageable pageable)
+     {
+         return ResponseEntity.ok(jugadorService.listarTodos(pageable));
+     }
+
+     @GetMapping("/listarporrangopage/{rango}")
+    public ResponseEntity<Page<JugadorResponseDTO>> listarPorRangoPaginado(
+            @PathVariable String rango,
+            @PageableDefault(size=10) Pageable pageable)
+     {
+         return ResponseEntity.ok(jugadorService.listarPorRango(rango, pageable));
+     }
+
+     @GetMapping("/listarporemail/{email}")
+    public ResponseEntity<List<JugadorResponseDTO>> listarPorEmailJPQL
+             (@PathVariable String email)
+     {
+         return ResponseEntity.ok(jugadorService.findByEmailJPQL(email));
+     }
+
+    @GetMapping("/listarpornickname/{nickname}")
+    public ResponseEntity<List<JugadorResponseDTO>> listarPorNicknameJPQL
+            (@PathVariable String nickname)
+    {
+        return ResponseEntity.ok(jugadorService.findByNicknameJPQL(nickname));
+    }
+
+    @GetMapping("/buscaremailporid")
+    public ResponseEntity<String>  findEmailByIdJPQL(@RequestParam Integer id){
+        if( jugadorService.findEmailByIdJPQL(id).isPresent()){
+            return ResponseEntity.ok(jugadorService.findEmailByIdJPQL(id).get());
+        }
+        else
+            return ResponseEntity.notFound().build();
+
+    }
+
+
 }
+
+
+
+
