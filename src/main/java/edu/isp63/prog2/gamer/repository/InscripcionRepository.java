@@ -22,11 +22,12 @@ public interface InscripcionRepository extends JpaRepository<Inscripcion, Intege
     List<Inscripcion> findByRango(@Param("rango") Integer rango);
 
     // 2. JOIN FETCH (cargar Inscripción junto con Jugador )
-    @Query("SELECT i.id, j.nickname, i.fechaInscripcion " +
-            "FROM Inscripcion i JOIN FETCH Jugador j " +
-            "WHERE i.fechaInscripcion BETWEEN  :fechaDesde AND :fechaHasta")
-    List<InscripcionJugadorResponseDTO> findByFechaInscripcionBetweenJPQL
-                (@Param("fechaDesde") LocalDate fechaDesde,
-                 @Param("fechaHasta") LocalDate fechaHasta);
+    @Query("SELECT new edu.isp63.prog2.gamer.dto.InscripcionJugadorResponseDTO(" +
+            "i.id, j.nickname, i.fechaInscripcion) " +
+            "FROM Inscripcion i JOIN i.jugador j " +
+            "WHERE i.fechaInscripcion BETWEEN :fechaDesde AND :fechaHasta")
+    List<InscripcionJugadorResponseDTO> findByFechaInscripcionBetweenJPQL(
+            @Param("fechaDesde") LocalDate fechaDesde,
+            @Param("fechaHasta") LocalDate fechaHasta);
 
 }
