@@ -1,6 +1,7 @@
 package edu.isp63.prog2.gamer.repository;
 
 import edu.isp63.prog2.gamer.dto.InscripcionJugadorResponseDTO;
+import edu.isp63.prog2.gamer.dto.InscripcionResponseDTO;
 import edu.isp63.prog2.gamer.entity.Inscripcion;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -30,4 +31,17 @@ public interface InscripcionRepository extends JpaRepository<Inscripcion, Intege
             @Param("fechaDesde") LocalDate fechaDesde,
             @Param("fechaHasta") LocalDate fechaHasta);
 
+
+    // 2. JOIN FETCH (cargar Inscripción junto con Jugador y Torneo )
+    @Query("SELECT new edu.isp63.prog2.gamer.dto.InscripcionResponseDTO(" +
+            "i.id, j.nickname, t.nombreTorneo, i.fechaInscripcion) " +
+            "FROM Inscripcion i " +
+            "JOIN i.jugador j " +
+            "JOIN i.torneo t " +
+            "WHERE i.fechaInscripcion BETWEEN :fechaDesde AND :fechaHasta " +
+            "AND t.nombreTorneo = :nombreTorneo")
+    List<InscripcionResponseDTO> findByFechaInscripcionBetweenAndTorneo(
+            @Param("fechaDesde") LocalDate fechaDesde,
+            @Param("fechaHasta") LocalDate fechaHasta,
+            @Param("nombreTorneo") String nombreTorneo);
 }
